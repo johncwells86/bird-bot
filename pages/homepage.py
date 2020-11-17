@@ -3,17 +3,24 @@ from sites.walmart import Walmart
 from sites.bestbuy import BestBuy
 from pages.createdialog import CreateDialog
 from utils import get_profile, get_proxy, BirdLogger, return_data, write_data, open_browser
-import urllib.request,sys,platform
+import urllib.request, sys, platform
 import settings
+
+
 def no_abort(a, b, c):
     sys.__excepthook__(a, b, c)
+
+
 sys.excepthook = no_abort
 logger = BirdLogger()
+
+
 class HomePage(QtWidgets.QWidget):
-    def __init__(self,parent=None):
+    def __init__(self, parent=None):
         super(HomePage, self).__init__(parent)
         self.setupUi(self)
         self.load_tasks()
+
     def setupUi(self, homepage):
         global tasks
         self.tasks = []
@@ -42,7 +49,7 @@ class HomePage(QtWidgets.QWidget):
         self.image_table_header.setText("Image")
         font = QtGui.QFont()
         font.setFamily("Arial")
-        font.setPointSize(15) if platform.system() == "Darwin" else font.setPointSize(15*.75)
+        font.setPointSize(15) if platform.system() == "Darwin" else font.setPointSize(15 * .75)
         font.setBold(False)
         font.setWeight(50)
         self.image_table_header.setFont(font)
@@ -82,7 +89,7 @@ class HomePage(QtWidgets.QWidget):
         self.tasks_header.setText("Tasks")
         font = QtGui.QFont()
         font.setFamily("Arial")
-        font.setPointSize(22) if platform.system() == "Darwin" else font.setPointSize(22*.75)
+        font.setPointSize(22) if platform.system() == "Darwin" else font.setPointSize(22 * .75)
         font.setBold(False)
         font.setWeight(50)
         self.tasks_header.setFont(font)
@@ -94,7 +101,7 @@ class HomePage(QtWidgets.QWidget):
         self.checkouts_label.setGeometry(QtCore.QRect(78, 10, 81, 31))
         font = QtGui.QFont()
         font.setFamily("Arial")
-        font.setPointSize(16) if platform.system() == "Darwin" else font.setPointSize(16*.75)
+        font.setPointSize(16) if platform.system() == "Darwin" else font.setPointSize(16 * .75)
         font.setBold(False)
         font.setWeight(50)
         self.checkouts_label.setFont(font)
@@ -112,7 +119,7 @@ class HomePage(QtWidgets.QWidget):
         self.checkouts_count.setGeometry(QtCore.QRect(43, 10, 31, 31))
         self.checkouts_count.setFont(font)
         self.checkouts_count.setStyleSheet("color: #34C693;border: none;")
-        self.checkouts_count.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.checkouts_count.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.checkouts_count.setText("0")
         self.tasks_total_card = QtWidgets.QWidget(self.homepage)
         self.tasks_total_card.setGeometry(QtCore.QRect(30, 45, 181, 51))
@@ -134,7 +141,7 @@ class HomePage(QtWidgets.QWidget):
         self.tasks_total_count.setGeometry(QtCore.QRect(43, 10, 31, 31))
         self.tasks_total_count.setFont(font)
         self.tasks_total_count.setStyleSheet("color: #755FF6;border: none;")
-        self.tasks_total_count.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.tasks_total_count.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.tasks_total_count.setText("0")
         self.carted_card = QtWidgets.QWidget(self.homepage)
         self.carted_card.setGeometry(QtCore.QRect(240, 45, 171, 51))
@@ -156,7 +163,7 @@ class HomePage(QtWidgets.QWidget):
         self.carted_count.setGeometry(QtCore.QRect(43, 10, 31, 31))
         self.carted_count.setFont(font)
         self.carted_count.setStyleSheet("color: #F6905E;border: none;")
-        self.carted_count.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.carted_count.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.carted_count.setText("0")
         self.buttons_card = QtWidgets.QWidget(self.homepage)
         self.buttons_card.setGeometry(QtCore.QRect(640, 45, 381, 51))
@@ -194,18 +201,21 @@ class HomePage(QtWidgets.QWidget):
 
     def load_tasks(self):
         tasks_data = return_data("./data/tasks.json")
-        write_data("./data/tasks.json",[])
+        write_data("./data/tasks.json", [])
         try:
             for task in tasks_data:
-                tab = TaskTab(task["site"],task["product"],task["profile"],task["proxies"],task["monitor_delay"],task["error_delay"],task["max_price"],self.stop_all_tasks,self.scrollAreaWidgetContents)
-                self.verticalLayout.takeAt(self.verticalLayout.count()-1)
+                tab = TaskTab(task["site"], task["product"], task["profile"], task["proxies"], task["monitor_delay"],
+                              task["error_delay"], task["max_price"], self.stop_all_tasks,
+                              self.scrollAreaWidgetContents)
+                self.verticalLayout.takeAt(self.verticalLayout.count() - 1)
                 self.verticalLayout.addWidget(tab)
-                spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+                spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum,
+                                                   QtWidgets.QSizePolicy.Expanding)
                 self.verticalLayout.addItem(spacerItem)
         except:
             pass
 
-    def set_settings_data(self,settings_data):
+    def set_settings_data(self, settings_data):
         global settings
         settings = settings_data
 
@@ -215,6 +225,7 @@ class HomePage(QtWidgets.QWidget):
                 task.start(None)
             except:
                 pass
+
     def stop_all_tasks(self):
         for task in self.tasks:
             try:
@@ -229,19 +240,23 @@ class HomePage(QtWidgets.QWidget):
             except:
                 pass
 
+
 class TaskTab(QtWidgets.QWidget):
-    def __init__(self,site,product,profile,proxies,monitor_delay,error_delay,max_price,stop_all,parent=None):
+    def __init__(self, site, product, profile, proxies, monitor_delay, error_delay, max_price, stop_all, parent=None):
         super(TaskTab, self).__init__(parent)
-        self.task_id = str(int(tasks_total_count.text())+1)
+        self.task_id = str(int(tasks_total_count.text()) + 1)
         tasks_total_count.setText(self.task_id)
-        self.site,self.product,self.profile,self.proxies,self.monitor_delay,self.error_delay,self.max_price,self.stop_all = site,product,profile,proxies,monitor_delay,error_delay,max_price,stop_all
+        self.site, self.product, self.profile, self.proxies, self.monitor_delay, self.error_delay, self.max_price, self.stop_all = site, product, profile, proxies, monitor_delay, error_delay, max_price, stop_all
         self.setupUi(self)
         tasks.append(self)
         tasks_data = return_data("./data/tasks.json")
-        task_data = {"task_id": self.task_id,"site":self.site,"product": self.product,"profile": self.profile,"proxies": self.proxies,"monitor_delay": self.monitor_delay,"error_delay": self.error_delay,"max_price": self.max_price}
+        task_data = {"task_id": self.task_id, "site": self.site, "product": self.product, "profile": self.profile,
+                     "proxies": self.proxies, "monitor_delay": self.monitor_delay, "error_delay": self.error_delay,
+                     "max_price": self.max_price}
         tasks_data.append(task_data)
-        write_data("./data/tasks.json",tasks_data)
-    def setupUi(self,TaskTab):
+        write_data("./data/tasks.json", tasks_data)
+
+    def setupUi(self, TaskTab):
         self.running = False
 
         self.TaskTab = TaskTab
@@ -252,7 +267,7 @@ class TaskTab(QtWidgets.QWidget):
         self.product_label.setGeometry(QtCore.QRect(222, 10, 331, 31))
         font = QtGui.QFont()
         font.setFamily("Arial")
-        font.setPointSize(13) if platform.system() == "Darwin" else font.setPointSize(13*.75)
+        font.setPointSize(13) if platform.system() == "Darwin" else font.setPointSize(13 * .75)
         font.setBold(False)
         font.setWeight(50)
         self.product_label.setFont(font)
@@ -326,7 +341,6 @@ class TaskTab(QtWidgets.QWidget):
         self.proxies_label.hide()
         self.load_labels()
 
-
     def load_labels(self):
         self.id_label.setText(self.task_id)
         self.product_label.setText(self.product)
@@ -339,14 +353,14 @@ class TaskTab(QtWidgets.QWidget):
         self.error_delay_label.setText(self.error_delay)
         self.max_price_label.setText(self.max_price)
 
-    def update_status(self,msg):
+    def update_status(self, msg):
         self.status_label.setText(msg["msg"])
         if msg["msg"] == "Browser Ready":
-            self.browser_url,self.browser_cookies = msg["url"],msg["cookies"]
+            self.browser_url, self.browser_cookies = msg["url"], msg["cookies"]
             self.running = False
             self.start_btn.raise_()
             self.browser_label.show()
-            logger.alt(self.task_id,msg["msg"])
+            logger.alt(self.task_id, msg["msg"])
             loop = QtCore.QEventLoop()
             QtCore.QTimer.singleShot(1000, loop.quit)
             loop.exec_()
@@ -354,38 +368,38 @@ class TaskTab(QtWidgets.QWidget):
             return
         if msg["status"] == "idle":
             self.status_label.setStyleSheet("color: rgb(255, 255, 255);")
-            logger.normal(self.task_id,msg["msg"])
+            logger.normal(self.task_id, msg["msg"])
         elif msg["status"] == "normal":
             self.status_label.setStyleSheet("color: rgb(163, 149, 255);")
-            logger.normal(self.task_id,msg["msg"])
+            logger.normal(self.task_id, msg["msg"])
         elif msg["status"] == "alt":
             self.status_label.setStyleSheet("color: rgb(242, 166, 137);")
-            logger.alt(self.task_id,msg["msg"])
+            logger.alt(self.task_id, msg["msg"])
         elif msg["status"] == "error":
             self.status_label.setStyleSheet("color: rgb(252, 81, 81);")
-            logger.error(self.task_id,msg["msg"])
+            logger.error(self.task_id, msg["msg"])
         elif msg["status"] == "success":
             self.status_label.setStyleSheet("color: rgb(52, 198, 147);")
-            logger.success(self.task_id,msg["msg"])
+            logger.success(self.task_id, msg["msg"])
             self.running = False
             self.start_btn.raise_()
             if settings.buy_one:
                 self.stop_all()
-            checkouts_count.setText(str(int(checkouts_count.text())+1))
+            checkouts_count.setText(str(int(checkouts_count.text()) + 1))
         elif msg["status"] == "carted":
             self.status_label.setStyleSheet("color: rgb(163, 149, 255);")
-            logger.alt(self.task_id,msg["msg"])
-            carted_count.setText(str(int(carted_count.text())+1))
+            logger.alt(self.task_id, msg["msg"])
+            carted_count.setText(str(int(carted_count.text()) + 1))
 
-    def update_image(self,image_url):
+    def update_image(self, image_url):
         self.image_thread = ImageThread(image_url)
         self.image_thread.finished_signal.connect(self.set_image)
         self.image_thread.start()
 
-    def set_image(self,pixmap):
+    def set_image(self, pixmap):
         self.image.setPixmap(pixmap)
 
-    def start(self,event):
+    def start(self, event):
         if not self.running:
             self.browser_label.hide()
             self.task = TaskThread()
@@ -405,13 +419,13 @@ class TaskTab(QtWidgets.QWidget):
             self.running = True
             self.stop_btn.raise_()
 
-    def stop(self,event):
+    def stop(self, event):
         self.task.stop()
         self.running = False
-        self.update_status({"msg":"Stopped","status":"idle"})
+        self.update_status({"msg": "Stopped", "status": "idle"})
         self.start_btn.raise_()
 
-    def edit(self,event):
+    def edit(self, event):
         self.edit_dialog = CreateDialog()
         self.edit_dialog.addtask_btn.clicked.connect(self.update_task)
         self.edit_dialog.taskcount_spinbox.hide()
@@ -427,11 +441,11 @@ class TaskTab(QtWidgets.QWidget):
         self.edit_dialog.show()
 
     def update_task(self):
-        self.site=self.edit_dialog.site_box.currentText()
-        self.product=self.edit_dialog.input_edit.text()
-        self.profile=self.edit_dialog.profile_box.currentText()
-        self.proxies=self.edit_dialog.proxies_box.currentText()
-        self.monitor_delay=self.edit_dialog.monitor_edit.text()
+        self.site = self.edit_dialog.site_box.currentText()
+        self.product = self.edit_dialog.input_edit.text()
+        self.profile = self.edit_dialog.profile_box.currentText()
+        self.proxies = self.edit_dialog.proxies_box.currentText()
+        self.monitor_delay = self.edit_dialog.monitor_edit.text()
         self.error_delay = self.edit_dialog.error_edit.text()
         self.max_price = self.edit_dialog.price_edit.text()
         self.load_labels()
@@ -441,7 +455,7 @@ class TaskTab(QtWidgets.QWidget):
                      "proxies": self.proxies, "monitor_delay": self.monitor_delay, "error_delay": self.error_delay,
                      "max_price": self.max_price}
         tasks_data.append(task_data)
-        write_data("./data/tasks.json",tasks_data)
+        write_data("./data/tasks.json", tasks_data)
         self.edit_dialog.deleteLater()
 
     def delete_json(self):
@@ -452,46 +466,53 @@ class TaskTab(QtWidgets.QWidget):
                 break
         write_data("./data/tasks.json", tasks_data)
 
-    def delete(self,event):
+    def delete(self, event):
         tasks_total_count.setText(str(int(tasks_total_count.text()) - 1))
         self.delete_json()
         self.TaskTab.deleteLater()
 
-    def open_browser(self,event):
+    def open_browser(self, event):
         self.browser_thread = BrowserThread()
         self.browser_thread.set_data(
             self.browser_url,
             self.browser_cookies
         )
         self.browser_thread.start()
+
+
 class TaskThread(QtCore.QThread):
     status_signal = QtCore.pyqtSignal("PyQt_PyObject")
     image_signal = QtCore.pyqtSignal("PyQt_PyObject")
+
     def __init__(self):
         QtCore.QThread.__init__(self)
 
-    def set_data(self,task_id,site,product,profile,proxies,monitor_delay,error_delay,max_price):
-        self.task_id,self.site,self.product,self.profile,self.proxies,self.monitor_delay,self.error_delay,self.max_price = task_id,site,product,profile,proxies,monitor_delay,error_delay,max_price
+    def set_data(self, task_id, site, product, profile, proxies, monitor_delay, error_delay, max_price):
+        self.task_id, self.site, self.product, self.profile, self.proxies, self.monitor_delay, self.error_delay, self.max_price = task_id, site, product, profile, proxies, monitor_delay, error_delay, max_price
 
     def run(self):
-        profile,proxy = get_profile(self.profile),get_proxy(self.proxies)
+        profile, proxy = get_profile(self.profile), get_proxy(self.proxies)
         if profile == None:
-            self.status_signal.emit({"msg":"Invalid profile","status":"error"})
+            self.status_signal.emit({"msg": "Invalid profile", "status": "error"})
             return
         if proxy == None:
-            self.status_signal.emit({"msg":"Invalid proxy list","status":"error"})
+            self.status_signal.emit({"msg": "Invalid proxy list", "status": "error"})
             return
         if self.site == "Walmart":
-            Walmart(self.task_id,self.status_signal,self.image_signal,self.product,profile,proxy,self.monitor_delay,self.error_delay,self.max_price)
+            Walmart(self.task_id, self.status_signal, self.image_signal, self.product, profile, proxy,
+                    self.monitor_delay, self.error_delay, self.max_price)
         elif self.site == "Bestbuy":
-            BestBuy(self.task_id,self.status_signal,self.image_signal,self.product,profile,proxy,self.monitor_delay,self.error_delay)
+            BestBuy(self.task_id, self.status_signal, self.image_signal, self.product, profile, proxy,
+                    self.monitor_delay, self.error_delay)
 
     def stop(self):
         self.terminate()
 
+
 class ImageThread(QtCore.QThread):
     finished_signal = QtCore.pyqtSignal("PyQt_PyObject")
-    def __init__(self,image_url):
+
+    def __init__(self, image_url):
         self.image_url = image_url
         QtCore.QThread.__init__(self)
 
@@ -501,12 +522,13 @@ class ImageThread(QtCore.QThread):
         pixmap.loadFromData(data)
         self.finished_signal.emit(pixmap)
 
+
 class BrowserThread(QtCore.QThread):
     def __init__(self):
         QtCore.QThread.__init__(self)
 
-    def set_data(self,url,cookies):
-        self.url,self.cookies = url,cookies
-    def run(self):
-        open_browser(self.url,self.cookies)
+    def set_data(self, url, cookies):
+        self.url, self.cookies = url, cookies
 
+    def run(self):
+        open_browser(self.url, self.cookies)

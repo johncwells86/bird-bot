@@ -13,12 +13,13 @@ from chromedriver_py import binary_path as driver_path
 import json, platform, darkdetect, random, settings, threading, hashlib, base64
 normal_color = Fore.CYAN
 e_key = "YnJ1aG1vbWVudA==".encode()
-BLOCK_SIZE=16
+BLOCK_SIZE = 16
 if platform.system() == "Windows":
     init(convert=True)
 else:
     init()
 print(normal_color + "Welcome To Bird Bot")
+
 
 class BirdLogger:
     def ts(self):
@@ -31,27 +32,37 @@ class BirdLogger:
         print(Fore.RED + "[{}][TASK {}] {}".format(self.ts(),task_id,msg))
     def success(self,task_id,msg):
         print(Fore.GREEN + "[{}][TASK {}] {}".format(self.ts(),task_id,msg))
+
+
 class Encryption:
     def encrypt(self,msg):
         IV = Random.new().read(BLOCK_SIZE)
         aes = AES.new(self.trans(e_key), AES.MODE_CFB, IV)
         return base64.b64encode(IV + aes.encrypt(msg.encode("utf-8")))
+
     def decrypt(self,msg):
         msg = base64.b64decode(msg)
         IV = msg[:BLOCK_SIZE]
         aes = AES.new(self.trans(e_key), AES.MODE_CFB, IV)
         return aes.decrypt(msg[BLOCK_SIZE:])
+
     def trans(self,key):
         return hashlib.md5(key).digest()
+
+
 def return_data(path):
     with open(path,"r") as file:
         data = json.load(file)
     file.close()
     return data
+
+
 def write_data(path,data):
     with open(path, "w") as file:
         json.dump(data, file)
     file.close()
+
+
 def get_profile(profile_name):
     profiles = return_data("./data/profiles.json")
     for p in profiles:
@@ -62,6 +73,8 @@ def get_profile(profile_name):
                 pass
             return p
     return None
+
+
 def get_proxy(list_name):
     if list_name == "Proxy List" or list_name == "None":
         return False
@@ -70,6 +83,8 @@ def get_proxy(list_name):
         if proxy_list["list_name"] == list_name:
             return format_proxy(random.choice(proxy_list["proxies"].splitlines()))
     return None
+
+
 def format_proxy(proxy):
     try:
         proxy_parts = proxy.split(":")
@@ -80,6 +95,8 @@ def format_proxy(proxy):
         }
     except IndexError:
         return {"http": "http://" + proxy, "https": "https://" + proxy}
+
+
 def send_webhook(webhook_type,site,profile,task_id,image_url):
     if settings.webhook !="":
         webhook = DiscordWebhook(url=settings.webhook, username="Bird Bot", avatar_url="https://i.imgur.com/fy26LbM.png")
@@ -106,13 +123,16 @@ def send_webhook(webhook_type,site,profile,task_id,image_url):
         except:
             pass
 
+
 def open_browser(link,cookies):
     threading.Thread(target = start_browser, args=(link,cookies)).start()
+
 
 def start_browser(link,cookies):
     caps = DesiredCapabilities().CHROME
     caps["pageLoadStrategy"] = "eager" 
     chrome_options = ChromeOptions()
+    # chrome_options.binary_location("/Applications/Google\ Chrome\ Canary.app/Contents/MacOS/Google\ Chrome\ Canary")
     chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
     chrome_options.add_experimental_option("useAutomationExtension", False)
     driver = Chrome(desired_capabilities=caps, executable_path=driver_path, options=chrome_options)

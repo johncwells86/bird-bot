@@ -43,10 +43,12 @@ class DiscordWebhook:
 
     def execute(self):
         if bool(self.files) is False:
-            response = requests.post(self.url, json=self.json, proxies=self.proxies)
+            # response = requests.post(self.url, json=self.json, proxies=self.proxies)
+            pass
         else:
             self.files["payload_json"] = (None, json.dumps(self.json))
-            response = requests.post(self.url, files=self.files, proxies=self.proxies)
+            # response = requests.post(self.url, files=self.files, proxies=self.proxies)
+            pass
 
 
 class DiscordEmbed:

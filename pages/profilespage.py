@@ -268,7 +268,7 @@ class ProfilesPage(QtWidgets.QWidget):
             self.cardmonth_box.addItem(str(month)) if month>9 else self.cardmonth_box.addItem("0"+str(month))
         for year in range(2020,2031):
             self.cardyear_box.addItem(str(year))
-        for card_type in ["Visa", "Mastercard", "American Express", "Discover"]:
+        for card_type in ["Visa", "Mastercard", "AMEX", "Discover"]:
             self.cardtype_box.addItem(card_type)
         profiles = return_data("./data/profiles.json")
         for profile in profiles:
